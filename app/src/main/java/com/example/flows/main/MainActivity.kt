@@ -51,9 +51,19 @@ class MainActivity : DaggerAppCompatActivity() {
         )
 
         loadMore.setOnClickListener {
-            viewModel.fetchDogsFlow()
+            viewModel.fetchDogs()
         }
+
+        viewModel.fetchedLivedata.observe(this, Observer {
+            when (it) {
+                is ResultWrapper.Loading -> { showLoading(it.isLoading) }
+                is ResultWrapper.NetworkError -> showToast("No internet")
+            }
+
+        })
     }
+
+    private fun showLoading(isLoading: Boolean) { }
 
 //    private fun fetchImagesSynchronously() {
 //        viewModel.loadDogListSynchronously()
