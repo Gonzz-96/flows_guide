@@ -21,14 +21,17 @@ class MainActivityRepository @Inject constructor(
     private val api: MainActivityApi
 ) {
 
-    @ExperimentalCoroutinesApi
+//    @ExperimentalCoroutinesApi
+//    val dogListFlow: Flow<List<Dog>>
+//        get() = dogDao.loadAllEpisodesFlow()
+//            .combine(topBreedsFlow) { dogs, topDogs ->
+//                dogs.applyToDog(topDogs)
+//            }
+//            .flowOn(Dispatchers.Default)
+//            .conflate()
+
     val dogListFlow: Flow<List<Dog>>
         get() = dogDao.loadAllEpisodesFlow()
-            .combine(topBreedsFlow) { dogs, topDogs ->
-                dogs.applyToDog(topDogs)
-            }
-            .flowOn(Dispatchers.Default)
-            .conflate()
 
     @ExperimentalCoroutinesApi
     fun getSearchedDogs(search: String): Flow<List<Dog>> {
