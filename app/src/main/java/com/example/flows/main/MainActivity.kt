@@ -61,6 +61,10 @@ class MainActivity : DaggerAppCompatActivity() {
             }
 
         })
+
+        viewModel.dogListLiveData.observe(this, Observer {
+            adapter.submitList(it)
+        })
     }
 
     private fun showLoading(isLoading: Boolean) { }
