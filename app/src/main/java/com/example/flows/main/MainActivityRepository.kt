@@ -92,4 +92,19 @@ class MainActivityRepository @Inject constructor(
 
         }
     }
+
+    suspend fun fetchAndUpdate(): ResultWrapper {
+        val wrappedResult = safeApiCall(Dispatchers.IO) { api.getRandomDogBreed() }
+        when (wrappedResult) {
+            is ResultWrapper.Success<*> -> {
+                val dogResponse = wrappedResult.value as ApiResponse<String>
+                val breedImageUrl = dogResponse.message
+                val dog = extractBreedName(breedImageUrl)?.let { Dog(it, breedImageUrl) }
+                dog?.run {
+                    dogDao.save(this)
+                }
+            }
+        }
+        return wrappedResult
+    }
 }
