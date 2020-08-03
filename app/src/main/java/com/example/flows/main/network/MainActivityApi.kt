@@ -25,4 +25,6 @@ interface MainActivityApi {
     @GET("breeds/image/random")
     suspend fun getRandomImageByUrl(): ApiResponse<String>
 
+    @GET("breeds/image/random")
+    suspend fun getRandomDogBreed(): ApiResponse<String>
 }
