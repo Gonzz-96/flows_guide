@@ -25,6 +25,9 @@ interface DogDao {
     fun getEpisodesForTrilogyNumberFlow(search: String?): Flow<List<Dog>>
 
 
+    @Query("SELECT * FROM dog")
+    fun loadAllDogsFlow(): Flow<List<Dog>>
+
 //  @Query("SELECT * FROM episode WHERE trilogy = :trilogyNumber ORDER BY number")
 //  fun getEpisodesForTrilogyNumberFlow(trilogyNumber: Int ): Flow<List<Episode>>
 }
