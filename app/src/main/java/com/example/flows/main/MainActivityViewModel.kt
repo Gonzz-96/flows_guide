@@ -13,7 +13,9 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
-class MainActivityViewModel @Inject constructor(private val mainActivityRepository: MainActivityRepository) : ViewModel() {
+class MainActivityViewModel @Inject constructor(
+    private val mainActivityRepository: MainActivityRepository
+) : ViewModel() {
     private companion object {
         private const val DELAY_BETWEEN_DOGS_IN_MS = 10000L
     }
@@ -27,6 +29,17 @@ class MainActivityViewModel @Inject constructor(private val mainActivityReposito
     private val _spinner = MutableLiveData(false)
     private val _topDogsAsync = MutableLiveData<List<Dog>>()
     private val atomicInteger = AtomicInteger()
+
+    private val _triggetFetchDogLiveData = MutableLiveData<Int>()
+    val fetchedLivedata = _triggetFetchDogLiveData.switchMap {
+        liveData {
+            emit(mainActivityRepository.fetchAndUpdate())
+        }
+    }
+
+    fun fetchDogs() {
+        _triggetFetchDogLiveData.value = atomicInteger.incrementAndGet()
+    }
 
     init {
 //        loadTopTwoDogsAsync()
