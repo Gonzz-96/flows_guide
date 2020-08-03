@@ -68,18 +68,20 @@ class MainActivityViewModel @Inject constructor(
     //with channel
     private val searchChanel = ConflatedBroadcastChannel<String>()
 
-    val dogListLiveData = searchChanel.asFlow()
-        .flatMapLatest { search ->
-            //use this as we don't want flows of flows
-
-            mainActivityRepository.getSearchedDogs(search)
-        }
-//        .onEach {
-//            _spinner.value = false
+//    val dogListLiveData = searchChanel.asFlow()
+//        .flatMapLatest { search ->
+//            //use this as we don't want flows of flows
+//
+//            mainActivityRepository.getSearchedDogs(search)
 //        }
-        .catch { throwable ->
-            _snackbar.value = throwable.message
-        }.asLiveData()
+////        .onEach {
+////            _spinner.value = false
+////        }
+//        .catch { throwable ->
+//            _snackbar.value = throwable.message
+//        }.asLiveData()
+
+    val dogListLiveData = mainActivityRepository.dogListFlow.asLiveData()
 
     fun setSearch(search: String) {
         searchChanel.offer(search)
