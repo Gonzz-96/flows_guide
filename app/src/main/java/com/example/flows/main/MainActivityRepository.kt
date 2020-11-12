@@ -1,6 +1,7 @@
 package com.example.flows.main
 
 import com.example.flows.error.ResultWrapper
+import com.example.flows.extensions.logCoroutine
 import com.example.flows.extensions.safeApiCall
 import com.example.flows.main.data.ApiResponse
 import com.example.flows.main.data.Dog
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
+import kotlin.coroutines.coroutineContext
 
 class MainActivityRepository @Inject constructor(
     private val dogDao: DogDao,
@@ -30,8 +32,19 @@ class MainActivityRepository @Inject constructor(
 //            .flowOn(Dispatchers.Default)
 //            .conflate()
 
-    val dogListFlow: Flow<List<Dog>>
-        get() = dogDao.loadAllEpisodesFlow()
+//    val dogListFlow: Flow<List<Dog>>
+//        get() = dogDao.loadAllEpisodesFlow()
+
+    private val topBreedsFlow = dogsRDS.topDogsFlow()
+
+    @ExperimentalCoroutinesApi
+    val dogListFlow = dogDao.loadAllDogsFlow()
+        .combine(topBreedsFlow) { dogs, topDogs ->
+            logCoroutine("inside combine functions", coroutineContext)
+            dogs.applyTopDogsToDatabaseList(topDogs)
+        }
+        .flowOn(Dispatchers.Default)
+        .conflate()
 
     @ExperimentalCoroutinesApi
     fun getSearchedDogs(search: String): Flow<List<Dog>> {
@@ -55,9 +68,6 @@ class MainActivityRepository @Inject constructor(
 //        val topBreedsList = dogsRDS.favoritesSortOrder()
 //        emit(topBreedsList)
 //    }
-
-    private val topBreedsFlow = dogsRDS.favoritesSortOrder()
-
 
     suspend fun tryFetchAndUpdate(): ResultWrapper {
 
@@ -109,5 +119,12 @@ class MainActivityRepository @Inject constructor(
             }
         }
         return wrappedResult
+    }
+
+    private fun List<Dog>.applyTopDogsToDatabaseList(topDogs: List<String>): List<Dog> {
+        return this.map {
+            val isTopDog = topDogs.contains(it.breed.capitalize())
+            Dog(it.breed, it.imageUrl, isTopDog)
+        }
     }
 }

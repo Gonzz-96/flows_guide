@@ -20,6 +20,15 @@ class RemoteDataSource @Inject constructor(private val api: MainActivityApi) {
         return breedName.replace(Regex("-"), " ").capitalize()
     }
 
+    fun topDogsFlow() = flow {
+        while (true) {
+            // Mock a network request that returns a list of dog breeds
+            val list = getDogs().map { it.capitalize() }.shuffled().subList(0, 20)
+            emit(list)
+            delay(2_000)
+        }
+    }
+
 
     //Emit all At once
 //    suspend fun favoritesSortOrder(): List<String> = withContext(Dispatchers.IO) {
